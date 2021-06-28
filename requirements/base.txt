@@ -1,1 +1,5 @@
 Flask==2.0.0
+python-twitter==3.5
+tweepy==3.10.0
+kafka-python==2.0.2
+python-dotenv==0.14.0
