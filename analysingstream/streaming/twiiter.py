@@ -1,17 +1,18 @@
-import os
+import json
+import logging
 
 from tweepy import OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 
-API_KEY = os.environ.get("TWITTER_API_KEY")
-API_SECRET_KEY = os.environ.get("TWITTER_SECRET_KEY")
-ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN")
-ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
+import config
+from analysingstream.database.mongo import MongoService
+
+logger = logging.getLogger(__name__)
 
 
 def authenticate_twitter_app() -> object:
-    auth = OAuthHandler(API_KEY, API_SECRET_KEY)
-    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    auth = OAuthHandler(config.API_KEY, config.API_SECRET_KEY)
+    auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
     return auth
 
 
@@ -23,8 +24,14 @@ def stream_tweets(hash_tag_list: list):
 
 
 class TwitterListener(StreamListener):
+    def __init__(self):
+        self.database = MongoService()
+        self.collection = self.database.collection(config.COLLECTION)
+
     def on_data(self, raw_data):
-        print(raw_data)
+        data = json.loads(raw_data)
+        self.database.insert(self.collection, data)
+        logger.info(raw_data)
 
     def on_error(self, status_code):
         print("Error detected")
