@@ -1,8 +1,7 @@
 import os
 
+from tweepy import OAuthHandler, Stream
 from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
-from tweepy import Stream
 
 API_KEY = os.environ.get("TWITTER_API_KEY")
 API_SECRET_KEY = os.environ.get("TWITTER_SECRET_KEY")

@@ -74,6 +74,7 @@ lint:
     python -m pylint --version
     python -m pylint src## Run tests using pytest
 .PHONY: test
+
 test:
     python -m pytest --version
     python -m pytest tests## Format your code using black
