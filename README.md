@@ -19,3 +19,5 @@ Links de referências:
 - https://elkhayati.me/kafka-python-twitter/
 - https://realpython.com/twitter-bot-python-tweepy/
 - https://www.earthdatascience.org/courses/use-data-open-source-python/intro-to-apis/twitter-data-in-python/
+- https://www.youtube.com/watch?v=wlnx-7cm4Gg&ab_channel=LucidProgramming
+- https://github.com/vprusso/youtube_tutorials/tree/master/twitter_python

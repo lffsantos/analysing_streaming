@@ -1,31 +1,35 @@
-import tweepy
 import os
 
-api_key = os.environ.get('TWITTER_API_KEY')
-api_secret_key = os.environ.get('TWITTER_SECRET_KEY')
-access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
-access_token_secret = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
+from tweepy.streaming import StreamListener
+from tweepy import OAuthHandler
+from tweepy import Stream
+
+API_KEY = os.environ.get("TWITTER_API_KEY")
+API_SECRET_KEY = os.environ.get("TWITTER_SECRET_KEY")
+ACCESS_TOKEN = os.environ.get("TWITTER_ACCESS_TOKEN")
+ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 
 
-class MyStreamListener(tweepy.StreamListener):
-    def __init__(self, api):
-        self.api = api
-        self.me = api.me()
+def authenticate_twitter_app() -> object:
+    auth = OAuthHandler(API_KEY, API_SECRET_KEY)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    return auth
 
-    def on_status(self, tweet):
-        print(f"{tweet.user.name}:{tweet.text}")
 
-    def on_error(self, status):
+def stream_tweets(hash_tag_list: list):
+    listener = TwitterListener()
+    auth = authenticate_twitter_app()
+    stream = Stream(auth, listener)
+    stream.filter(track=hash_tag_list, languages=["pt"])
+
+
+class TwitterListener(StreamListener):
+    def on_data(self, raw_data):
+        print(raw_data)
+
+    def on_error(self, status_code):
         print("Error detected")
 
 
-# Authenticate to Twitter
-auth = tweepy.OAuthHandler(api_key, api_secret_key)
-auth.set_access_token(access_token, access_token_secret)
-
-# Create API object
-api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
-
-tweets_listener = MyStreamListener(api)
-stream = tweepy.Stream(api.auth, tweets_listener)
-stream.filter(track=["covid", "covid-19"], languages=["pt-br"])
+if __name__ == "__main__":
+    stream_tweets(["covid", "covid-19"])
