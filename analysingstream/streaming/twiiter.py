@@ -5,7 +5,8 @@ from tweepy import OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 
 import config
-from analysingstream.database.mongo import MongoService
+from analysingstream.processors.correlation_id import CorrelationId
+from analysingstream.processors.dispatcher.kafka_dispatcher import KafkaDispatcher
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +26,14 @@ def stream_tweets(hash_tag_list: list):
 
 class TwitterListener(StreamListener):
     def __init__(self):
-        self.database = MongoService()
-        self.collection = self.database.collection(config.COLLECTION)
+        self.dispatcher = KafkaDispatcher()
 
     def on_data(self, raw_data):
         data = json.loads(raw_data)
-        self.database.insert(self.collection, data)
+        correlation_id = CorrelationId(TwitterListener.__name__)
+        self.dispatcher.send(
+            config.QUEUE_COLLECT_TWITTER, data["id_str"], correlation_id, data
+        )
         logger.info(raw_data)
 
     def on_error(self, status_code):
@@ -38,4 +41,4 @@ class TwitterListener(StreamListener):
 
 
 if __name__ == "__main__":
-    stream_tweets(["covid", "covid-19"])
+    stream_tweets(["covid", "covid-19", "flamengo"])
