@@ -5,6 +5,7 @@ from tweepy import OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 
 import config
+
 from analysingstream.processors.correlation_id import CorrelationId
 from analysingstream.processors.dispatcher.kafka_dispatcher import KafkaDispatcher
 

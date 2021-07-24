@@ -2,7 +2,8 @@ version: '3'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
-    networks: 
+    container_name: zookeeper
+    networks:
       - streaming
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -10,7 +11,8 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    networks: 
+    container_name: kafka-server
+    networks:
       - streaming
     depends_on:
       - zookeeper
@@ -26,7 +28,8 @@ services:
 
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
-    networks: 
+    container_name: kafdrop
+    networks:
       - streaming
     depends_on:
       - kafka
@@ -69,6 +72,7 @@ services:
 
   mongo-express:
     image: mongo-express
+    container_name: mongo-express
     ports:
       - 8081:8081
     environment:
@@ -97,6 +101,12 @@ services:
     networks:
       - streaming
 
+#  twitter_stream:
+#    container_name: twitter_stream
+#    env_file:
+#      - .env
+#    networks:
+#      - streaming
 
 networks:
   streaming:
@@ -104,6 +114,6 @@ networks:
 
 volumes:
     data01:
-        driver: local
+      driver: local
     data02:
       driver: local

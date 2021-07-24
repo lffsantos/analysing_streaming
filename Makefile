@@ -23,26 +23,21 @@ help:
 	@echo "make build_code:"
 	@echo "       Generate a build image"
 	@echo ""
-	@echo "make build_code_test:"
-	@echo "       Generate a build test image"
-	@echo ""
-	@echo "make run_postgres:"
-	@echo "       Run Postgres database"
-	@echo ""
 	@echo "make test:"
 	@echo "       Run tests with coverage, lint, and clean commands"
 	@echo ""
-	@echo "make development:"
-	@echo "       Run app in development mode"
+	@echo "make run_all_services:"
+	@echo "       Run all services in background mode"
 	@echo ""
-	@echo "make run:"
-	@echo "       Run App in background mode"
+	@echo "make test:"
+	@echo "       run testes"
 	@echo ""
-	@echo "make stop:"
-	@echo "       Stop Application"
+	@echo "make black:"
+	@echo "       run black
 	@echo ""
-	@echo "make stop_all:"
-	@echo "       Stop Application and Postgres"
+	@echo ""
+	@echo "make lint:"
+	@echo "       run lint
 	@echo ""
 
 clean:
@@ -56,8 +51,7 @@ clean-build:
 	rm --force --recursive *.egg-info
 
 isort:
-	sh -c "isort --skip-glob=.tox --recursive . "
-
+	sh -c "isort --skip-glob=.tox . "
 
 copy_env:
 	-cp -n .env-example .env
@@ -65,22 +59,24 @@ copy_env:
 build_code:
 	$(DOCKER_COMPOSE) build
 
-run:
-	$(DOCKER_COMPOSE) up
+run_all_services:
+	$(DOCKER_COMPOSE) up -d
+
+elasticsearch:
+	$(DOCKER_COMPOSE) up -d es01
+
+kibana:
+	$(DOCKER_COMPOSE) up -d elasticsearch kibana
 
 ## Lint your code using pylint
 .PHONY: lint
 lint:
-    python -m pylint --version
-    python -m pylint src## Run tests using pytest
-.PHONY: test
+	python -m pylint analysingstream
 
+.PHONY: test
 test:
-    python -m pytest --version
-    python -m pytest tests## Format your code using black
+	python -m pytest --version
+	python -m pytest tests## Format your code using black
 .PHONY: black
 black:
-    python -m black --version
-    python -m black .## Run ci part
-.PHONY: ci
-    ci: precommit lint test
+	python -m black .
